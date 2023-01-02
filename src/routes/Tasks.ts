@@ -1,42 +1,33 @@
 import { Request, Response, Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { Task } from "../entities/Task";
-import { AppDataSource } from '../postgresql/db';
+import { ParamsDictionary } from 'express-serve-static-core';
+import { findAllTasks, addTask, findOneTask } from '../dao/TasksDao';
+import { mapRequestToTask } from '../entities/Mappers';
+import { Any } from 'typeorm';
 
 // Init shared
 const router = Router();
-
-const taskRepository = AppDataSource.getRepository(Task)
 
 
 /******************************************************************************
  *                      Get All Tasks - "GET /api/tasks/all"
  ******************************************************************************/
 
-router.get('/all', async (req: Request, res: Response) => {
-    const tasks = await taskRepository.find()
-    return res.status(StatusCodes.OK).json({tasks});
+router.get('/all', async (req: Request, res: Response) => {   
+    findAllTasks().then(tasks => {
+        return res.status(StatusCodes.OK).json(tasks);
+    })
 });
 
 /******************************************************************************
- *                      Get User - "GET /api/users/:id"
+ *                      Get User - "GET /api/tasks/:taskId"
  ******************************************************************************/
-
-// router.get('/:id', async (req: Request, res: Response) => {
-//     const { id } = req.params as ParamsDictionary;
-//     const user = await getConnection()
-//         .createQueryBuilder()
-//         .select("user")
-//         .from(User, "user")
-//         .where("user.id = :id", { id: id })
-//         .getOne();
-//     if (!user) {
-//         res.status(404);
-//         res.end();
-//         return;
-//     }
-//     return res.status(OK).json({user});
-// });
+router.get('/:taskId', async (req: Request, res: Response) => {
+    const { taskId } = req.params as ParamsDictionary
+    findOneTask(taskId).then(task => {
+        return res.status(StatusCodes.OK).json(task);
+    })
+});
 
 
 /******************************************************************************
@@ -44,18 +35,16 @@ router.get('/all', async (req: Request, res: Response) => {
  ******************************************************************************/
 
 router.post('/add', async (req: Request, res: Response) => {
-    console.log(req.body)
-    const task = new Task();
-    task.name = req.body.name;
-    task.description = req.body.description;
-    console.log(task)
+    console.log(req.body);
+    const task = mapRequestToTask(req);
+    console.log(task);
     
     if (!task) {
         return res.status(StatusCodes.BAD_REQUEST).json({
             error: "No task provided",
         });
     }
-    await taskRepository.save(task)
+    await addTask(task) //how to check that add was successful?
     return res.status(StatusCodes.CREATED).end();
 });
 
