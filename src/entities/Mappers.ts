@@ -4,6 +4,7 @@ import { Request, Response, Router } from 'express';
 
 export function mapRequestToTask(req: Request) {
     const task = new Task();
+    task.taskId = req.body.taskId;
     task.name = req.body.name;
     task.description = req.body.description;
     task.dependencies = req.body.dependencies;
