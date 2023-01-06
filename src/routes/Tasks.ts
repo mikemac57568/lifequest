@@ -1,9 +1,8 @@
 import { Request, Response, Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { ParamsDictionary } from 'express-serve-static-core';
-import { findAllTasks, addTask, findOneTask } from '../dao/TasksDao';
+import { findAllTasks, findOneTask, deleteOneTask, saveTask } from '../dao/TasksDao';
 import { mapRequestToTask } from '../entities/Mappers';
-import { Any } from 'typeorm';
 
 // Init shared
 const router = Router();
@@ -19,6 +18,7 @@ router.get('/all', async (req: Request, res: Response) => {
     })
 });
 
+
 /******************************************************************************
  *                      Get User - "GET /api/tasks/:taskId"
  ******************************************************************************/
@@ -31,63 +31,31 @@ router.get('/:taskId', async (req: Request, res: Response) => {
 
 
 /******************************************************************************
- *                       Add One - "POST /api/tasks/add"
+ *                       Add Or Replace One - "PUT /api/tasks/save"
  ******************************************************************************/
-
-router.post('/add', async (req: Request, res: Response) => {
-    console.log(req.body);
-    const task = mapRequestToTask(req);
-    console.log(task);
-    
+router.put('/save', async (req: Request, res: Response) => {
+    const task = mapRequestToTask(req);    
     if (!task) {
         return res.status(StatusCodes.BAD_REQUEST).json({
             error: "No task provided",
         });
     }
-    await addTask(task) //how to check that add was successful?
-    return res.status(StatusCodes.CREATED).end();
+    saveTask(task).then(task => {
+        return res.status(task ? StatusCodes.CREATED : StatusCodes.IM_A_TEAPOT).json(task);
+    })
 });
 
 
 /******************************************************************************
- *                       Update - "PUT /api/users/update"
+ *                    Delete - "DELETE /api/tasks/delete/:id"
  ******************************************************************************/
 
-// router.put('/update', async (req: Request, res: Response) => {
-//     const { user } = req.body;
-//     if (!user && !user.id) {
-//         return res.status(BAD_REQUEST).json({
-//             error: paramMissingError,
-//         });
-//     }
-//     await getConnection()
-//         .createQueryBuilder()
-//         .update(User)
-//         .set({ 
-//             firstName: user.firstName, 
-//             lastName: user.lastName,
-//             age: user.age
-//         })
-//         .where("id = :id", { id: user.id })
-//         .execute();
-//     return res.status(OK).end();
-// });
-
-
-/******************************************************************************
- *                    Delete - "DELETE /api/users/delete/:id"
- ******************************************************************************/
-
-// router.delete('/delete/:id', async (req: Request, res: Response) => {
-//     const { id } = req.params as ParamsDictionary;
-//     await getConnection()
-//         .createQueryBuilder()
-//         .delete()
-//         .from(User)
-//         .where("id = :id", { id: id })
-//         .execute();
-//     return res.status(OK).end();
-// });
+router.delete('/delete/:taskId', async (req: Request, res: Response) => {
+    const { taskId } = req.params as ParamsDictionary
+    deleteOneTask(taskId).then(result => {
+        return res.status(result ? StatusCodes.OK : StatusCodes.IM_A_TEAPOT).end();
+    })
+});
 
 
 /******************************************************************************

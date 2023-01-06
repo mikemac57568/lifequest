@@ -3,16 +3,16 @@ import { Column, Entity, PrimaryGeneratedColumn } from "typeorm"
 @Entity()
 export class Material {
     @PrimaryGeneratedColumn()
-    materialId: string
+    materialId: string = "";
     @Column({
         length: 100
     })
-    name: string
+    name: string = "";
     @Column("text")
-    description: string
+    description: string = "";
     @Column()
-    source: string
+    source: string = "";
     @Column()
-    quantity: number
+    quantity: number = 0;
     //metadata: JSON maybe list of objects?
 }

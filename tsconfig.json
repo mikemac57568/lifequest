@@ -3,10 +3,11 @@
       "emitDecoratorMetadata": true,
       "experimentalDecorators": true,
       "module": "commonjs",
-      "target": "ES6",
+      "target": "ES6", //can we upgrade this to ES2015
       "outDir": "bin",
       "rootDir": "src",
       "sourceMap": true,
-      "esModuleInterop": true
+      "esModuleInterop": true,
+      "strict": true //can we upgrade this since this is a new project? see errors in project
   }
 }

@@ -3,12 +3,12 @@ import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
 @Entity()
 export class Dependency {
     @PrimaryGeneratedColumn()
-    dependencyId: string
+    dependencyId: string = "";
     @Column("text")
-    description: string
+    description: string = "";
     @Column()
-    parentTask: string
+    parentTask: string = "";
     @Column()
-    subTask: string
+    subTask: string = "";
     //metadata: JSON maybe make this list of objects or something
 }
