@@ -26,8 +26,8 @@ export class Task {
     @Column("text", { array: true, nullable: true })
     dependencies: string[] =[];
 
-    @Column("text", { array: true, nullable: true })
-    materials: string[] = [];
+    // @Column("text", { array: true, nullable: true })
+    // materials: string[] = [];
 
     //metadata: JSON maybe list of objects?
 }

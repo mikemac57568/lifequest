@@ -6,7 +6,9 @@ import { mapRequestToTask } from '../entities/Mappers';
 
 // Init shared
 const router = Router();
-
+//https://typeorm.io/repository-api
+//https://www.typescriptlang.org/docs/handbook/2/everyday-types.html
+//https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide
 
 /******************************************************************************
  *                      Get All Tasks - "GET /api/tasks/all"
