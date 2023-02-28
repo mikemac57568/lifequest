@@ -3,9 +3,11 @@ import { StatusCodes } from 'http-status-codes';
 import { ParamsDictionary } from 'express-serve-static-core';
 import { findAllTasks, findOneTask, deleteOneTask, saveTask } from '../dao/TasksDao';
 import { mapRequestToTask } from '../entities/Mappers';
+import { Task } from '../entities/Task';
 
 // Init shared
 const router = Router();
+
 //https://typeorm.io/repository-api
 //https://www.typescriptlang.org/docs/handbook/2/everyday-types.html
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide
@@ -25,7 +27,8 @@ router.get('/all', async (req: Request, res: Response) => {
  *                      Get User - "GET /api/tasks/:taskId"
  ******************************************************************************/
 router.get('/:taskId', async (req: Request, res: Response) => {
-    const { taskId } = req.params as ParamsDictionary
+    const { taskId }: ParamsDictionary = req.params
+    //const { oldSyntaxTaskId } = req.params as ParamsDictionary //when to use as vs when to declare type
     findOneTask(taskId).then(task => {
         return res.status(StatusCodes.OK).json(task);
     })
@@ -36,8 +39,8 @@ router.get('/:taskId', async (req: Request, res: Response) => {
  *                       Add Or Replace One - "PUT /api/tasks/save"
  ******************************************************************************/
 router.put('/save', async (req: Request, res: Response) => {
-    const task = mapRequestToTask(req);    
-    if (!task) {
+    const task: Task = mapRequestToTask(req);    
+    if (!task) { //TODO mapper should throw an exception instead of doing this
         return res.status(StatusCodes.BAD_REQUEST).json({
             error: "No task provided",
         });
